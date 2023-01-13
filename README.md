@@ -10,12 +10,15 @@ Fun-Mooc Inria "Machine learning in Python with scikit-learn" kursuna ait özet-
   - [Best Practices](#best-practices)
     - [Standart Scaler Ne Zaman Kullanılır?](#standart-scaler-ne-zaman-kullanılır)
       - [Teori](#teori)
+  - [test\_train\_split vs cross\_validate](#test_train_split-vs-cross_validate)
+  - [gridSearchCV vs RandomizedSearchCV](#gridsearchcv-vs-randomizedsearchcv)
     - [cross\_validate: cv parametresi için best practice değerler](#cross_validate-cv-parametresi-için-best-practice-değerler)
     - [Kategorik verileri analiz ederken hangi encoder seçilmeli?](#kategorik-verileri-analiz-ederken-hangi-encoder-seçilmeli)
       - [Teori](#teori-1)
   - [Genel Best Practiceler](#genel-best-practiceler)
   - [İsimlendirme Kuralları](#i̇simlendirme-kuralları)
   - [Önemli Notlar](#önemli-notlar)
+  - [Modül İçerikleri](#modül-i̇çerikleri)
 
 
 ## Best Practices
@@ -38,13 +41,21 @@ Veri setinin özelliklerinin farklı aralıklara yayıldığını görüyoruz. B
 
 StandardScaler adlı bir scikit-learn dönüştürücü kullanarak böyle bir normalleştirmenin nasıl uygulanacağını gösteriyoruz. Bu dönüştürücü, her bir özelliği ayrı ayrı kaydırır ve ölçeklendirir, böylece hepsinde 0 ortalama ve bir birim standart sapma bulunur.
 
+## test_train_split vs cross_validate
+
+eğer veriseti 20binden fazla veri içeriyorsa genelde test_train_split kullanılır. Aksi takdirde cross_validate daha iyi bir seçim olabilir.
+
+## gridSearchCV vs RandomizedSearchCV
+
+eğer daha az hyper-parametreyi arayacaksak ve bunları hardcoded olarak arayacaksak, gridSearchCV seçilebilir. gridSearchCV yapısı itibariyle çok fazla hyper-parametre aramaya elverişli değildir, çok uzun süren bir arama yapar. RandomizedSearchCV ise hyper parametreler için aralıkları kendi belirler ve en iyiye yakın bir sonucu çok hızlı verir. Veri seti büyükse ve çok fazla hyperparametre tune edilecekse bu yöntem seçilebilir.
+
 ### cross_validate: cv parametresi için best practice değerler
 
 Özellikle k-fold stratejisi için: cv=5 ya da cv=10
 
 ### Kategorik verileri analiz ederken hangi encoder seçilmeli?
 
-Özet:  OrdinalEncoder Kategorik bir değişken herhangi bir anlamlı sıra bilgisi taşıyorsa (ordinal: örn. small, medium, large vs. gibi) o zaman kullanılır. Aksi durumda dummy trape düşülür! Eğer sıra bilgisi yoksa (nominal: örn. male, female vs. gibi) o zaman one-hot encoder kullanılmalı.
+Özet:  OrdinalEncoder Kategorik bir değişken herhangi bir anlamlı sıra bilgisi taşıyorsa (ordinal: örn. small, medium, large vs. gibi) o zaman kullanılır. Eğer sıra bilgisi yoksa (nominal: örn. male, female vs. gibi) o zaman one-hot encoder kullanılmalı.
 
 #### Teori
 
@@ -77,8 +88,14 @@ Yüksek kardinaliteye sahip one-hot kodlama kategorik değişkenleri, ağaç tab
 
 * Encoder tipini seçerken best practicelere dikkat et, aksi takdirde dummy trape düşülür ve öğrenme başarısızlığa uğrar.
 
+* Overfitting ve underfitting tespiti için her zaman validation_curve'e bakmak iyi bir seçimdir.
+
+* Model başarısını arttırmak için automated hyper-tuning kullanmak önemlidir.
+
 
 ## İsimlendirme Kuralları
+
+* High bias: underfitting, High Variance: overfitting olarak adlandırılır.
 
 * Geleneksel olarak, Python'da alt çizgi değişkeni, ilgilenmediğimiz sonuçları depolamak için bir "çöp" değişkeni olarak kullanılır.
 
@@ -103,5 +120,13 @@ Yüksek kardinaliteye sahip one-hot kodlama kategorik değişkenleri, ağaç tab
 * Stringlerin ve dolayısıyla kategorik özellikleri temsil etmek için nesne veri tipinin kullanıldığını biliyoruz. Bunun her zaman böyle olmadığını unutmayın. Bazen nesne veri türü, uygun şekilde biçimlendirilmemiş tarihler (dizeler) gibi diğer bilgi türlerini içerebilir ve yine de geçen süre miktarıyla ilgilidir. Daha genel bir senaryoda, make_column_selector'ı yanlış bir şekilde kullanmamak için veri çerçevenizin içeriğini manuel olarak incelemelisiniz.
 
 * Eğer ampirik (train) error ile karşılaşırsanız yani modeli eğitimiz zaman train error 0 gelirse, o zaman shuffle split stratejisi uygulanabilir (bu problem en çok decision treelerde karşımıza çıkıyor).
+
+## Modül İçerikleri
+
+1-) Temel pandas ve görselleştirme, ölçeklendirme ve görselleştirme, cross_validation giriş, encodinge giriş, basit pipeline oluşturma
+
+2-) cross_validation framework ayrıntılar ve görselleştirme, overfitting ve underfiting tespiti için validation_curve ve görselleştirme, shuffle splite giriş
+
+3-) Hyper-parametre tuning (automated ve manual) ve görselleştirme
 
 
